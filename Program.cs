@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Primitives;
-using System.IO;
+//using Microsoft.Extensions.Primitives;
+//using System.IO;
 
 //var builder = WebApplication.CreateBuilder(args);
 //var app = builder.Build();
@@ -80,7 +80,7 @@ await context.Response.WriteAsync($"Method: {method}");*/
 
 //app.Run();
 
-//Math app through HTTP GET
+/*Math app through HTTP GET
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -176,6 +176,36 @@ app.Run(async (HttpContext context) =>
             await context.Response.WriteAsync("Invalid input for 'operation'\n");
         }
     }
+});
+
+app.Run();
+
+*/
+
+using Demo.Middleware.CustomMiddleware;
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddTransient<CustomMiddleware>();
+var app = builder.Build();
+
+//middleware 1
+app.Use(async (HttpContext context, RequestDelegate next) => {
+    await context.Response.WriteAsync("Hello!\n");
+    await next(context);
+});
+
+//middleware 2
+//app.Use(async (HttpContext context, RequestDelegate next) => {
+//    await context.Response.WriteAsync("Android");
+//    await next(context);
+//});
+
+//middleware 2
+//app.UseMiddleware<CustomMiddleware>();
+app.UseCm();
+
+//middleware 3
+app.Run(async (HttpContext context) => {
+    await context.Response.WriteAsync("Coding!!\n");
 });
 
 app.Run();
