@@ -182,16 +182,17 @@ app.Run();
 
 */
 
-using Demo.Middleware.CustomMiddleware;
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddTransient<CustomMiddleware>();
-var app = builder.Build();
+//using Demo.Middleware;
+//using Demo.Middleware.Middleware.CustomMiddleware;
+//var builder = WebApplication.CreateBuilder(args);
+//builder.Services.AddTransient<CustomMiddleware>();
+//var app = builder.Build();
 
 //middleware 1
-app.Use(async (HttpContext context, RequestDelegate next) => {
-    await context.Response.WriteAsync("Hello!\n");
-    await next(context);
-});
+//app.Use(async (HttpContext context, RequestDelegate next) => {
+//    await context.Response.WriteAsync("Hello!\n");
+//    await next(context);
+//});
 
 //middleware 2
 //app.Use(async (HttpContext context, RequestDelegate next) => {
@@ -201,11 +202,117 @@ app.Use(async (HttpContext context, RequestDelegate next) => {
 
 //middleware 2
 //app.UseMiddleware<CustomMiddleware>();
-app.UseCm();
+//app.UseCm();
+//app.UseCMiddleware();
 
 //middleware 3
-app.Run(async (HttpContext context) => {
-    await context.Response.WriteAsync("Coding!!\n");
+//app.Run(async (HttpContext context) => {
+//    await context.Response.WriteAsync("Coding!!\n");
+//});
+
+//app.Run();
+
+
+
+//UseWhen
+//var builder = WebApplication.CreateBuilder(args);
+//var app = builder.Build();
+
+//app.UseWhen(
+//    context => context.Request.Query.ContainsKey("name"),
+//    app => {
+//        app.Use(async (context, next) =>
+//        {
+//            await context.Response.WriteAsync("UseWhen ");
+//            await next();
+//        });
+//    }
+//);
+
+//app.Run(async context => {
+//    await context.Response.WriteAsync("Hello World!");
+//});
+
+//app.Run(); 
+
+
+//Create an Asp.Net Core Web Application that receives username and password via POST request (from Postman).
+
+//using Demo.Middleware;
+
+//var builder = WebApplication.CreateBuilder(args);
+//var app = builder.Build();
+
+////Invoking custom middleware
+//app.UseLoginMiddleware();
+
+//app.Run(async context => {
+//    await context.Response.WriteAsync("No response");
+//});
+//app.Run();
+
+
+//Routing
+
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+//app.Use(async (context, next) =>
+//{
+//    Microsoft.AspNetCore.Http.Endpoint? endpoint = context.GetEndpoint();
+//    if (endpoint != null) {
+//        await context.Response.WriteAsync($"Endpoint: {endpoint.DisplayName }\n");
+//    }
+//    await next(context);
+//});
+
+app.UseRouting();
+
+//app.Use(async (context, next) =>
+//{
+//    Microsoft.AspNetCore.Http.Endpoint? endpoint = context.GetEndpoint();
+//    if (endpoint != null)
+//    {
+//        await context.Response.WriteAsync($"Endpoint: {endpoint.DisplayName}\n");
+//    }
+//    await next(context);
+//});
+
+app.UseEndpoints(endpoints => {
+    //endpoints.Map("map1", async (context) => {
+    //    await context.Response.WriteAsync("Map1");
+    //});
+
+    //endpoints.Map("map2", async (context) => {
+    //    await context.Response.WriteAsync("Map2");
+    //});
+
+    endpoints.Map("files/{filename}.{extension}", async (context) =>
+    {
+        //string filename = context.Request.RouteValues["filename"] as string;
+        //string extension = context.Request.RouteValues["extension"] as string;
+        //await context.Response.WriteAsync($"Filename: {filename}\n");
+        //await context.Response.WriteAsync($"Extension: {extension}\n");
+
+        string? filename = Convert.ToString(context.Request.RouteValues["filename"]);
+        string? extension = Convert.ToString(context.Request.RouteValues["extension"]);
+        await context.Response.WriteAsync($"Files - {filename} - {extension}");
+    });
+
+    endpoints.Map("employee/profile/{Id = 46}", async context => {
+        string? id = Convert.ToString(context.Request.RouteValues["Id"]);
+        await context.Response.WriteAsync($"Employee Profile - {id}");
+    });
+
+    endpoints.Map("products/details/{id=2}", async context => {
+        int pid = Convert.ToInt32(context.Request.RouteValues.["id"]);
+        await context.Response.WriteAsync($"Product ID: {pid}");
+    });
+});
+
+app.Run(async context =>
+{
+    await context.Response.WriteAsync($"Request Received at {context.Request.Path}");
 });
 
 app.Run();

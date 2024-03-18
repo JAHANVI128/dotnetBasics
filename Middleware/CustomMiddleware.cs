@@ -1,4 +1,4 @@
-﻿namespace Demo.Middleware.CustomMiddleware
+﻿namespace Demo.Middleware.Middleware.CustomMiddleware
 {
     public class CustomMiddleware : IMiddleware
     {
