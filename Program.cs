@@ -304,7 +304,8 @@ app.UseEndpoints(endpoints => {
         await context.Response.WriteAsync($"Employee Profile - {id}");
     });
 
-    endpoints.Map("products/details/{id=2}", async context => {
+    endpoints.Map("products/details/{id=2}", async context =>
+    {
         int pid = Convert.ToInt32(context.Request.RouteValues.["id"]);
         await context.Response.WriteAsync($"Product ID: {pid}");
     });
