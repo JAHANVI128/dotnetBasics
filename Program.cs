@@ -6,11 +6,11 @@
 
 //app.Run(async (HttpContext context) =>
 //{
-/* if( 1 == 2) {
-        context.response.statuscode = 500;
-    } else {
-        context.response.statuscode = 200;
-    }*/
+// if( 1 == 2) {
+ //       context.response.statuscode = 500;
+  //  } else {
+// context.response.statuscode = 200;
+   // }
 
 //Response Headers
 //context.Response.Headers["name"] = "jahanvi";
@@ -254,6 +254,8 @@ app.Run();
 
 //Routing
 
+using System.Security.Cryptography;
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -299,16 +301,38 @@ app.UseEndpoints(endpoints => {
         await context.Response.WriteAsync($"Files - {filename} - {extension}");
     });
 
-    endpoints.Map("employee/profile/{Id = 46}", async context => {
+    endpoints.Map("employee/profile/{Id = 46}", async context => 
+    {
         string? id = Convert.ToString(context.Request.RouteValues["Id"]);
         await context.Response.WriteAsync($"Employee Profile - {id}");
     });
 
-    endpoints.Map("products/details/{id=2}", async context =>
+    endpoints.Map("products/details/{id:int?}", async context => 
     {
-        int pid = Convert.ToInt32(context.Request.RouteValues.["id"]);
-        await context.Response.WriteAsync($"Product ID: {pid}");
+        if (context.Request.RouteValues.ContainsKey("id")) 
+        {
+            int pid = Convert.ToInt32(context.Request.RouteValues["id"]);
+            await context.Response.WriteAsync($"Product ID: {pid}");
+        } 
+        else
+        {
+            await context.Response.WriteAsync($"Product ID is not defined");
+        }
     });
+
+    endpoints.Map("daily-report/{reportdate:datetime}", async context =>
+    {
+        DateTime date = Convert.ToDateTime(context.Request.RouteValues["reportdate"]);
+        await context.Response.WriteAsync($"Daily Report : {date.ToShortDateString()}");
+    });
+
+    endpoints.Map("city/{cityid:guid}", async context =>
+    {
+        Guid cityId = Guid.Parse(Convert.ToString(context.Request.RouteValues["cityid"])!);
+        await context.Response.WriteAsync($"City ID: {cityId}");
+        // {9C19A270-1E96-468E-8333-E6288C830A55}
+    });
+
 });
 
 app.Run(async context =>
